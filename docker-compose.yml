@@ -45,6 +45,7 @@ services:
       MONGO_CONNECTION: mongodb://mongo:27017/nightscout
 
       # API_SECRET - set via Dokploy environment variables
+      API_SECRET: ${API_SECRET}
 
       ### Features
       # ENABLE - Used to enable optional features, expects a space delimited list, such as: careportal rawbg iob
