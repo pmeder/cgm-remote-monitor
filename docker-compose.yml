@@ -23,11 +23,13 @@ services:
       - mongo
     labels:
       - 'traefik.enable=true'
-      # Change the below Host from `localhost` to be the web address where Nightscout is running.
-      # Also change the email address in the `traefik` service below.
-      - 'traefik.http.routers.nightscout.rule=Host(`localhost`)'
+      - 'traefik.http.routers.nightscout.rule=Host(`${NIGHTSCOUT_HOST}`)'
       - 'traefik.http.routers.nightscout.entrypoints=websecure'
       - 'traefik.http.routers.nightscout.tls.certresolver=le'
+      - 'traefik.http.services.nightscout.loadbalancer.server.port=1337'
+    networks:
+      - default
+      - dokploy-network
     logging: *default-logging
     environment:
       ### Variables for the container
@@ -64,25 +66,6 @@ services:
       # For all other settings, please refer to the Environment section of the README
       # https://github.com/nightscout/cgm-remote-monitor#environment
 
-  traefik:
-    image: traefik:latest
-    restart: always
-    container_name: 'traefik'
-    command:
-      - '--providers.docker=true'
-      - '--providers.docker.exposedbydefault=false'
-      - '--entrypoints.web.address=:80'
-      - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
-      - '--entrypoints.websecure.address=:443'
-      - "--certificatesresolvers.le.acme.httpchallenge=true"
-      - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
-      - '--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json'
-      # Change the below to match your email address
-      - '--certificatesresolvers.le.acme.email=example@example.com'
-    ports:
-      - '443:443'
-      - '80:80'
-    volumes:
-      - './letsencrypt:/letsencrypt'
-      - '/var/run/docker.sock:/var/run/docker.sock:ro'
-    logging: *default-logging
+networks:
+  dokploy-network:
+    external: true
