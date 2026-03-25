@@ -21,8 +21,9 @@ services:
     restart: always
     depends_on:
       - mongo
-    ports:
-      - '1337:1337'
+    networks:
+      - default
+      - dokploy-network
     logging: *default-logging
     environment:
       ### Variables for the container
@@ -58,4 +59,8 @@ services:
 
       # For all other settings, please refer to the Environment section of the README
       # https://github.com/nightscout/cgm-remote-monitor#environment
+
+networks:
+  dokploy-network:
+    external: true
 
