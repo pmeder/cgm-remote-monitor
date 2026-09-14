@@ -11,7 +11,7 @@ services:
     image: mongo:5.0.32
     restart: always
     volumes:
-      - ${NS_MONGO_DATA_DIR:-./mongo-data}:/data/db:cached
+      - mongo-data:/data/db
     logging: *default-logging
 
   nightscout:
@@ -27,7 +27,7 @@ services:
     environment:
       ### Variables for the container
       NODE_ENV: production
-      TZ: Etc/UTC
+      TZ: ${TZ:-Etc/UTC}
 
       ### Overridden variables for Docker Compose setup
       # The `nightscout` service can use HTTP, because we use `traefik` to serve the HTTPS
@@ -50,12 +50,16 @@ services:
       ### Features
       # ENABLE - Used to enable optional features, expects a space delimited list, such as: careportal rawbg iob
       # See https://github.com/nightscout/cgm-remote-monitor#plugins for details
-      ENABLE: careportal rawbg iob
+      ENABLE: ${ENABLE:-careportal rawbg iob}
 
       # AUTH_DEFAULT_ROLES (readable) - possible values readable, denied, or any valid role name.
       # When readable, anyone can view Nightscout without a token. Setting it to denied will require
       # a token from every visit, using status-only will enable api-secret based login.
-      AUTH_DEFAULT_ROLES: denied
+      AUTH_DEFAULT_ROLES: ${AUTH_DEFAULT_ROLES:-denied}
+      DISPLAY_UNITS: ${DISPLAY_UNITS:-mg/dl}
+      LANGUAGE: ${LANGUAGE:-en}
+      TIME_FORMAT: ${TIME_FORMAT:-12}
+      DEVICESTATUS_ADVANCED: ${DEVICESTATUS_ADVANCED:-true}
       # For all other settings, please refer to the Environment section of the README
       # https://github.com/nightscout/cgm-remote-monitor#environment
 
@@ -63,3 +67,7 @@ networks:
   dokploy-network:
     external: true
 
+volumes:
+  mongo-data:
+    name: nightscout-mongo-data
+    external: true
