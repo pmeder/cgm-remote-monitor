@@ -24,6 +24,8 @@ services:
       - default
       - dokploy-network
     logging: *default-logging
+    env_file:
+      - .env
     environment:
       ### Variables for the container
       NODE_ENV: production
