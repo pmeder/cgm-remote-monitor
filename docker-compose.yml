@@ -24,8 +24,6 @@ services:
       - default
       - dokploy-network
     logging: *default-logging
-    env_file:
-      - .env
     environment:
       ### Variables for the container
       NODE_ENV: production
@@ -37,6 +35,10 @@ services:
       INSECURE_USE_HTTP: 'true'
       # Listen on all container interfaces so reverse proxies and other containers can reach Nightscout
       NIGHTSCOUT_HOSTNAME: '0.0.0.0'
+      # Nightscout liest HOSTNAME (lib/server/env.js), nicht NIGHTSCOUT_HOSTNAME.
+      # Ohne diese Zeile bindet es an den Container-Hostnamen und ist je nach
+      # Netzwerk-Reihenfolge fuer den Reverse Proxy nicht erreichbar.
+      HOSTNAME: '0.0.0.0'
 
       # For all other settings, please refer to the Environment section of the README
       ### Required variables
@@ -62,6 +64,11 @@ services:
       LANGUAGE: ${LANGUAGE:-en}
       TIME_FORMAT: ${TIME_FORMAT:-12}
       DEVICESTATUS_ADVANCED: ${DEVICESTATUS_ADVANCED:-true}
+      SHOW_PLUGINS: ${SHOW_PLUGINS:-dbsize}
+      BASAL_RENDER: ${BASAL_RENDER:-none}
+      BOLUS_RENDER_OVER: ${BOLUS_RENDER_OVER:-0.5}
+      BG_TARGET_TOP: ${BG_TARGET_TOP:-180}
+      BG_TARGET_BOTTOM: ${BG_TARGET_BOTTOM:-80}
       # For all other settings, please refer to the Environment section of the README
       # https://github.com/nightscout/cgm-remote-monitor#environment
 
